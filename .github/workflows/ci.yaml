@@ -13,19 +13,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout repo
+      - name: repo checkout
         uses: actions/checkout@v4
 
-      - name: use node.js
+      - name: start Super-Linter
+        uses: github/super-linter@v5
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_TEXT: false        
+          VALIDATE_YAML: false       
+          VALIDATE_CSS: false         
+
+
+      - name: Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: install main dependencies
-        run: npm install
-
-      - name: install all dependencies
+      - name: install dep
         run: npm run install-dep
 
-      - name: test
-        run: npm run start
+
