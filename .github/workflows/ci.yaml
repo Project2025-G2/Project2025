@@ -1,0 +1,31 @@
+name: CI (Lint + Tests)
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout репозиторію
+        uses: actions/checkout@v4
+
+      - name: Встановлення Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Встановлення залежностей
+        run: npm install
+
+      - name: Перевірка коду (Lint)
+        run: npm run lint
+
+      - name: Запуск тестів
+        run: npm test
