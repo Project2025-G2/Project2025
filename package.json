@@ -6,10 +6,9 @@
     "start": "concurrently \"npm run start-client\" \"npm run start-server\"",
     "start-client": "cd client  && npm run build && npm run start",
     "start-server": "cd server && npm start",
-    "install-client-dep":"cd client && npm i",
-    "install-server-dep":"cd server && npm i",
-    "install-dep":"concurrently \"npm run start-client\" \"npm run start-server\""
-
+    "install-client-dep": "cd client && npm i",
+    "install-server-dep": "cd server && npm i",
+    "install-dep": "concurrently \"npm run start-client\" \"npm run start-server\""
   },
   "repository": {
     "type": "git",
@@ -24,5 +23,8 @@
   "description": "",
   "dependencies": {
     "concurrently": "^9.1.2"
+  },
+  "devDependencies": {
+    "standard": "^17.1.2"
   }
 }
