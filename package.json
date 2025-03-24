@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently \"npm run start-client\" \"npm run start-server\"",
-    "start-client": "cd client  && npm run start",
+    "start-client": "cd client  && npm run build && npm run start",
     "start-server": "cd server && npm start",
     "install-client-dep":"cd client && npm i",
     "install-server-dep":"cd server && npm i",
