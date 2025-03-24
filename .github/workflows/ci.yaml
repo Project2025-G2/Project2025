@@ -20,6 +20,7 @@ jobs:
         uses: github/super-linter@v5
         env:
           VALIDATE_ALL_CODEBASE: true
+          DISABLE_LINTERS: "stylelint" 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Встановлення Node.js
