@@ -5,7 +5,7 @@ FROM node:18
 WORKDIR /app
 
 # Копіюємо package.json та package-lock.json для встановлення залежностей
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 # Встановлюємо всі залежності
 RUN npm install

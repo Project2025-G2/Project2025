@@ -1,26 +1,20 @@
 version: '3.8'
 
 services:
-  server:
-    build:
-      context: ./server
-    ports:
-      - "5000:5000"  # Порт для серверу
-    volumes:
-      - ./server:/app
-    working_dir: /app
-    command: npm start
-    environment:
-      - NODE_ENV=development
-
   client:
     build:
-      context: ./client
+      context: ./client  # Шлях до клієнтського Dockerfile
     ports:
-      - "3000:3000"  # Порт для React клієнта
-    volumes:
-      - ./client:/app
-    working_dir: /app
-    command: npm start
+      - "3000:3000"  # Проксіюємо порт 3000 хоста на контейнер
+    depends_on:
+      - server  # Запускаємо клієнт тільки після сервера
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
+
+  server:
+    build:
+      context: ./server  # Шлях до серверного Dockerfile
+    ports:
+      - "5000:5000"  # Проксіюємо порт 5000 хоста на контейнер
+    environment:
+      - NODE_ENV=production
