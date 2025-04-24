@@ -1,17 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import Header from './components/Header';
+import AuthForm from './components/AuthForm';
+import './styles.css';
 
 function App() {
-  const [message, setMessage] = useState('');
+  const [isLogin, setIsLogin] = useState(false);
 
-  useEffect(() => {
-    fetch('http://localhost:5000/api')
-      .then(res => res.json())
-      .then(data => setMessage(data.message));
-  }, []);
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
+  };
 
   return (
-    <div>
-      <h1>{message || 'Loading...'}</h1>
+    <div className="container">
+      <Header toggleForm={toggleForm} isLogin={isLogin} />
+      <AuthForm isInitialLogin={isLogin} />
+      <div className="footer">
+        ©FSI-33 Team B, 2025
+      </div>
     </div>
   );
 }
