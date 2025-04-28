@@ -10,10 +10,12 @@ function App () {
   }, [])
 
   return (
-    <div>
-      <h1>{message || 'Loading...'}</h1>
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App
