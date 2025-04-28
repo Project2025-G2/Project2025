@@ -1,0 +1,21 @@
+.poster {
+    flex: 0 0 auto;
+    text-align: center;
+    margin-right: 40px;
+  }
+  
+  .poster:last-child {
+    margin-right: 0;
+  }
+  
+  .poster img {
+    width: 390px;
+    height: 550px;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .poster img:hover {
+    transform: scale(1.05);
+  }
