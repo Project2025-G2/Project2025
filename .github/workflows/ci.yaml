@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - dev
-      - ci-test
+      - ci-test-old
   pull_request:
     branches:
       - dev
