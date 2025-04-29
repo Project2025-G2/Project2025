@@ -1,8 +1,14 @@
-const express = require('express');
+const express = require('express')
 const cors = require('cors');
+const app = express()
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
-require('dotenv').config();
+const mongoose = require('mongoose');
+const dotenv = require('dotenv')
+const PORT = 5000
+
+
+dotenv.config({ path: __dirname + '/.env' });
 
 const app = express();
 

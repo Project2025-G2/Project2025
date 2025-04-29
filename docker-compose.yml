@@ -1,20 +1,14 @@
 version: '3.8'
 
 services:
-  client:
+  app:
     build:
-      context: ./client  # Шлях до клієнтського Dockerfile
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_USERNAME}/project2025:latest  # Один образ для клієнта і сервера
     ports:
-      - "3000:3000"  # Проксіюємо порт 3000 хоста на контейнер
-    depends_on:
-      - server  # Запускаємо клієнт тільки після сервера
+      - "3000:3000"
+      - "5000:5000"
     environment:
       - NODE_ENV=production
-
-  server:
-    build:
-      context: ./server  # Шлях до серверного Dockerfile
-    ports:
-      - "5000:5000"  # Проксіюємо порт 5000 хоста на контейнер
-    environment:
-      - NODE_ENV=production
+      - MONGO_URI=${DB_LINK}
