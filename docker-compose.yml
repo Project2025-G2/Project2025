@@ -1,24 +1,14 @@
+version: '3.8'
 
 services:
-  client:
+  app:
     build:
-      context: ./client
+      context: .
       dockerfile: Dockerfile
-    image: ${DOCKER_USERNAME}/project2025-client:latest  # Використовуємо змінну DOCKER_USERNAME
+    image: ${DOCKER_USERNAME}/project2025:latest  # Один образ для клієнта і сервера
     ports:
       - "3000:3000"
-    depends_on:
-      - server
-    environment:
-      - NODE_ENV=production
-
-  server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    image: ${DOCKER_USERNAME}/project2025-server:latest  # Використовуємо змінну DOCKER_USERNAME
-    ports:
       - "5000:5000"
     environment:
       - NODE_ENV=production
-      - MONGO_URI=${DB_LINK}  # Передаємо змінну DB_LINK
+      - MONGO_URI=${DB_LINK}
