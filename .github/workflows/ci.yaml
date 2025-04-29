@@ -70,7 +70,8 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/project2025:latest .
 
-      # 10. Push Docker image to Docker Hub
-      - name: Push Docker image
+       # 10. Build and Push Docker Images
+      - name: Build and Push Docker Images
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/project2025:latest
+          docker-compose -f docker-compose.yml build
+          docker-compose -f docker-compose.yml push
