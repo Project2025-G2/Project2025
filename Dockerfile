@@ -16,8 +16,13 @@ COPY server ./
 # Об'єднуємо клієнт і сервер
 FROM node:18
 WORKDIR /app
+# Копіюємо серверні файли
+COPY --from=server /app/server ./server
+# Копіюємо збудований клієнт у правильну директорію відносно сервера
 COPY --from=client /app/client/build ./client/build
-COPY --from=server /app/server ./
+
+# Встановлюємо залежності сервера
+WORKDIR /app/server
 RUN npm install
 
 # Передаємо MONGO_URI як змінну оточення
