@@ -8,7 +8,8 @@
     "start-server": "cd server && npm start",
     "install-client-dep": "cd client && npm i",
     "install-server-dep": "cd server && npm i",
-    "install-dep": "npm run install-client-dep && npm run install-server-dep"
+    "install-dep": "npm run install-client-dep && npm run install-server-dep",
+    "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
