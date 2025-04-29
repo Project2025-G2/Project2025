@@ -3,18 +3,23 @@
 services:
   client:
     build:
-      context: ./client  # Шлях до клієнтського Dockerfile
+      context: ./client
+      dockerfile: Dockerfile
+    image: $DOCKER_USERNAME/project2025-client:latest  # Додаємо тег для Docker Hub
     ports:
-      - "3000:3000"  # Проксіюємо порт 3000 хоста на контейнер
+      - "3000:3000"
     depends_on:
-      - server  # Запускаємо клієнт тільки після сервера
+      - server
     environment:
       - NODE_ENV=production
 
   server:
     build:
-      context: ./server  # Шлях до серверного Dockerfile
+      context: ./server
+      dockerfile: Dockerfile
+    image: $DOCKER_USERNAME/project2025-server:latest  # Додаємо тег для Docker Hub
     ports:
-      - "5000:5000"  # Проксіюємо порт 5000 хоста на контейнер
+      - "5000:5000"
     environment:
       - NODE_ENV=production
+      - MONGO_URI=${DB_LINK}
