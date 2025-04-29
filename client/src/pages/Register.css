@@ -1,0 +1,77 @@
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+.register-form {
+  flex: 1;
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+.register-form form {
+  background-color: rgba(44, 62, 80, 0.8);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.register-form form div {
+  margin-bottom: 1.2rem;
+}
+
+.register-form input {
+  width: calc(100% - 32px); /* Adjust for padding */
+  padding: 12px 16px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 16px;
+}
+
+.register-form input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.register-form button {
+  width: 100%;
+  padding: 12px 16px; /* Match input padding */
+  margin-top: 1.5rem;
+  background-color: #00b7eb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+  box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+.register-form button:hover {
+  background-color: #0099cc;
+}
+
+.error {
+  color: #ff4444;
+  font-size: 14px;
+  margin-top: 5px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: rgba(255, 68, 68, 0.1);
+  white-space: pre-line;
+  display: block;
+}
+
+.register-form .error {
+  margin-bottom: 10px;
+}
+
+.register-form input.error {
+  border: 1px solid #ff4444;
+}
