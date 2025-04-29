@@ -1,0 +1,31 @@
+{
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "env": {
+      "es6": true,
+      "browser": true,
+      "node": true
+    },
+    "rules": {
+      "indent": "off",
+      "linebreak-style": "off",
+      "quotes": "off",
+      "semi": "off",
+      "comma-dangle": "off",
+      "max-len": "off",
+      "no-trailing-spaces": "off",
+      "eol-last": "off",
+      "no-undef": "error",
+      "no-unused-vars": "warn",
+      "valid-typeof": "error",
+      "no-const-assign": "error",
+      "no-dupe-args": "error",
+      "no-dupe-keys": "error"
+    }
+  }

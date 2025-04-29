@@ -23,7 +23,8 @@
   "homepage": "https://github.com/Project2025-G2/Project2025#readme",
   "description": "",
   "dependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "dotenv": "^16.5.0"
   },
   "devDependencies": {
     "standard": "^17.1.2"
