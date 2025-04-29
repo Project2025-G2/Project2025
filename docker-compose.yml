@@ -1,11 +1,10 @@
 
-
 services:
   client:
     build:
       context: ./client
       dockerfile: Dockerfile
-    image: $DOCKER_USERNAME/project2025-client:latest  # Додаємо тег для Docker Hub
+    image: ${DOCKER_USERNAME}/project2025-client:latest  # Використовуємо змінну DOCKER_USERNAME
     ports:
       - "3000:3000"
     depends_on:
@@ -17,9 +16,9 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    image: $DOCKER_USERNAME/project2025-server:latest  # Додаємо тег для Docker Hub
+    image: ${DOCKER_USERNAME}/project2025-server:latest  # Використовуємо змінну DOCKER_USERNAME
     ports:
       - "5000:5000"
     environment:
       - NODE_ENV=production
-      - MONGO_URI=${DB_LINK}
+      - MONGO_URI=${DB_LINK}  # Передаємо змінну DB_LINK
