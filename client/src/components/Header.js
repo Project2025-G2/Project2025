@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Header.css';
 
 const Header = () => {
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const toggleDropdown = () => {
+    setShowDropdown(prev => !prev);
+  };
+
   return (
     <header className="header">
       <div className="logo">NAME OF SERVICE</div>
@@ -14,7 +21,15 @@ const Header = () => {
       </nav>
       <div className="user-options">
         <span className="language">🌐 UA</span>
-        <span className="profile">👤</span>
+        <div className="profile-dropdown">
+          <span className="profile" onClick={toggleDropdown}>👤</span>
+          {showDropdown && (
+            <div className="dropdown-menu">
+              <Link to="/login">Авторизація</Link>
+              <Link to="/register">Реєстрація</Link>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
