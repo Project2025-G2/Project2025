@@ -19,5 +19,10 @@ WORKDIR /app
 COPY --from=client /app/client/build ./client/build
 COPY --from=server /app/server ./
 RUN npm install
+
+# Передаємо MONGO_URI як змінну оточення
+ARG MONGO_URI
+ENV MONGO_URI=${MONGO_URI}
+
 EXPOSE 3000 5000
 CMD ["npm", "start"]
