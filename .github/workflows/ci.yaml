@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - dev
-      - ci-test
+      - test-dockerhub
   pull_request:
     branches:
       - dev
