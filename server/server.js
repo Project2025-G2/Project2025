@@ -1,26 +1,22 @@
-const express = require('express')
+const express = require('express');
 const cors = require('cors');
-const app = express()
+const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv')
-const PORT = 5000
 
-
-dotenv.config({ path: __dirname + '/.env' });
+dotenv.config(); // Завантажує .env (з server/ якщо запускаєш там)
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// CORS configuration
+// Middleware
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true
 }));
-
 app.use(express.json());
 
-// Connect to MongoDB with better error handling
+// MongoDB
 connectDB()
   .then(() => console.log('MongoDB connected successfully'))
   .catch(err => {
@@ -30,8 +26,11 @@ connectDB()
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.get('/api', (req, res) => {
+  res.json({ message: 'Hello from Node.js!' });
+});
 
-// Error handling middleware
+// Error middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
   res.status(500).json({
@@ -40,8 +39,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-
+// Start server
 const server = app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

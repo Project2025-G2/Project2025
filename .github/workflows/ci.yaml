@@ -12,9 +12,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: node:18
+
 
     steps:
-
       # 1. Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
@@ -47,30 +49,42 @@ jobs:
         working-directory: ./client
         run: npm run build
 
-      # 6. Start backend server
-      - name: Start backend server
+      # 6. Load .env.local if running in act
+      - name: Load .env from server/ if running in act
+        if: env.ACT == 'true'
+        run: |
+          echo "Detected act, loading server/.env"
+          export $(grep -v '^#' ./server/.env | xargs)
+          echo "MONGO_URI=$MONGO_URI" >> $GITHUB_ENV
+
+
+
+      # 7. Set MONGO_URI from GitHub secret (only if not using act)
+      - name: Set MONGO_URI from secrets
+        if: env.ACT != 'true'
+        run: echo "MONGO_URI=${{ secrets.DB_LINK }}" >> $GITHUB_ENV
+
+      # 8. Start backend server and test it
+      - name: Start and test backend server
         working-directory: ./server
         env:
-          MONGO_URI: ${{ secrets.DB_LINK }}
+          MONGO_URI: ${{ env.MONGO_URI }}
         run: |
           npm start &
-          sleep 15
+          sleep 10
+          curl --retry 5 --retry-delay 3 --fail http://localhost:5000/api
 
-      # 7. Test backend server
-      - name: Test backend server is running
-        run: |
-          curl --fail http://localhost:5000/api || exit 1
 
-      # 8. Log in to Docker Hub
+      # 10. Log in to Docker Hub
       - name: Log in to Docker Hub
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # 9. Build and Push Docker Image
+      # 11. Build and Push Docker Image
       - name: Build and Push Docker Image
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          MONGO_URI: ${{ secrets.DB_LINK }}
+          MONGO_URI: ${{ env.MONGO_URI }}
         run: |
           docker build --build-arg MONGO_URI=${MONGO_URI} -t ${{ secrets.DOCKER_USERNAME }}/project2025:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/project2025:latest
