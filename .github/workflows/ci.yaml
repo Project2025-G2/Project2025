@@ -74,6 +74,10 @@ jobs:
           sleep 10
           curl --retry 5 --retry-delay 3 --fail http://localhost:5000/api
 
+      - name: Install Docker CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
 
       # 10. Log in to Docker Hub
       - name: Log in to Docker Hub
