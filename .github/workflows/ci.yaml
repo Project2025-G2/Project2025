@@ -51,7 +51,7 @@ jobs:
     name: 🚀 Deploy to AWS EC2
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/feature/ci-test'
     steps:
       - name: SSH Deploy via appleboy
         uses: appleboy/ssh-action@v1
