@@ -1,3 +1,4 @@
+# .github/workflows/ci-cd.yml
 name: CI (Lint + Tests + Build + Deploy)
 
 on:
@@ -10,16 +11,13 @@ on:
       - dev
 
 jobs:
-  build:
+  build-and-test:
+    name: 🛠 Build & Test
     runs-on: ubuntu-latest
-
     steps:
-
-      # 1. Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Run Super-Linter
       - name: Run Super-Linter
         uses: github/super-linter@v5
         env:
@@ -27,50 +25,53 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_JAVASCRIPT_ES: true
           DEFAULT_BRANCH: dev
-          FILTER_REGEX_INCLUDE: .*\.(js|jsx)$
+          FILTER_REGEX_INCLUDE: .*\.(js|jsx|ts|tsx)$
           JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.json
           JAVASCRIPT_DEFAULT_STYLE: prettier
           LINTER_RULES_PATH: /
 
-      # 3. Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '20'
 
-      # 4. Install dependencies
-      - name: Install dependencies
-        run: npm run install-dep
+      - name: Install server dependencies
+        working-directory: ./server
+        run: npm ci
 
-      # 5. Build frontend
+      - name: Install client dependencies
+        working-directory: ./client
+        run: npm ci
+
       - name: Build frontend
         working-directory: ./client
         run: npm run build
 
-      # 6. Start backend server
-      - name: Start backend server
+      - name: Test backend
         working-directory: ./server
         env:
           MONGO_URI: ${{ secrets.DB_LINK }}
-        run: |
-          npm start &
-          sleep 15
+        run: npm test
 
-      # 7. Test backend server
-      - name: Test backend server is running
-        run: |
-          curl --fail http://localhost:5000/api || exit 1
-
-      # 8. Log in to Docker Hub
-      - name: Log in to Docker Hub
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      # 9. Build and Push Docker Image
-      - name: Build and Push Docker Image
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          MONGO_URI: ${{ secrets.DB_LINK }}
-        run: |
-          docker build --build-arg MONGO_URI=${MONGO_URI} -t ${{ secrets.DOCKER_USERNAME }}/project2025:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/project2025:latest
+  deploy:
+    name: 🚀 Deploy to AWS EC2
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
+    steps:
+      - name: SSH Deploy via appleboy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /home/ubuntu/Project2025
+            echo "Pull latest changes"
+            git pull origin dev
+            echo "Rebuild and restart services"
+            docker-compose down
+            docker-compose up -d --build
+            echo "Cleanup unused images"
+            docker image prune -f

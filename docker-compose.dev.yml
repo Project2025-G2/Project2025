@@ -5,38 +5,43 @@ networks:
     driver: bridge
 
 services:
-  client:
+  server:
     build:
-      context: ./client  # Шлях до клієнтського Dockerfile
-    depends_on:
-      - server  # Запускаємо клієнт тільки після сервера
+      context: ./server
+    ports:
+      - "5000:5000"
     env_file:
       - .env
+    networks:
+      - app-network
+
+  client-builder:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      target: builder
+    # коли контейнер стартить, він просто миттєво завершиться (exit 0),
+    # але volume client_build вже міститиме зібрану статику
+    command: ["sh", "-c", "echo Static built; exit 0"]
     volumes:
       - client_build:/app/build
     networks:
       - app-network
 
-  server:
-    build:
-      context: ./server  # Шлях до серверного Dockerfile
-    ports:
-      - "5000:5000"  # Проксіюємо порт 5000 хоста на контейнер
-    env_file:
-      - .env
-    networks:
-      - app-network
-
   nginx:
-    image: nginx:stable
+    image: nginx:stable-alpine
+    depends_on:
+      - client-builder
+      - server
     ports:
-      - "8080:80"
+      - "80:80"
+      - "443:443"    # з часом сюди заведете сертифікати
     volumes:
       - client_build:/usr/share/nginx/html:ro
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - client
-      - server
+      # в майбутньому сюди можна монтувати ваші certs:
+      # - ./docker/nginx/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem
+      # - ./docker/nginx/certs/privkey.pem:/etc/nginx/certs/privkey.pem
     networks:
       - app-network
 
@@ -61,7 +66,6 @@ services:
       retries: 5
     networks:
       - app-network
-
 
 volumes:
   pg_data:
