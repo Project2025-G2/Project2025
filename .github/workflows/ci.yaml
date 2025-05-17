@@ -61,25 +61,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-
-            # Додамо GitHub в known_hosts, щоб ssh-клон не падав
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-
-            # Якщо папки з проєктом нема — клонуємо
-            if [ ! -d "$HOME/Project2025" ]; then
-              git clone git@github.com:Project2025-G2/Project2025.git "$HOME/Project2025"
-            fi
-
-            cd "$HOME/Project2025"
-
-            # Скидаємо локальні зміни і підтягуємо гілку dev
-            git fetch origin dev
-            git reset --hard origin/dev
-
+            cd /home/ubuntu/Project2025
+            echo "Pull latest changes"
+            git pull origin dev
             echo "Rebuild and restart services"
             docker-compose down
             docker-compose up -d --build
-
             echo "Cleanup unused images"
             docker image prune -f
