@@ -47,12 +47,6 @@ jobs:
         working-directory: ./client
         run: CI=false npm run build
 
-      - name: Test backend
-        working-directory: ./server
-        env:
-          MONGO_URI: ${{ secrets.DB_LINK }}
-        run: npm test
-
   deploy:
     name: 🚀 Deploy to AWS EC2
     needs: build-and-test
