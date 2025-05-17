@@ -63,7 +63,7 @@ jobs:
             set -e
             cd /home/ubuntu/Project2025
             echo "Pull latest changes"
-            git pull origin dev
+            git pull origin feature/ci-test
             echo "Rebuild and restart services"
             docker-compose down
             docker-compose up -d --build
