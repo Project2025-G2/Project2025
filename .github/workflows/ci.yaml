@@ -1,5 +1,5 @@
 # .github/workflows/ci-cd.yml
-name: CI (Lint + Tests + Build + Deploy)
+name: CI (Lint + Tests + Build & Push) & Deploy
 
 on:
   push:
@@ -11,49 +11,76 @@ on:
       - dev
 
 jobs:
-  build-and-test:
-    name: 🛠 Build & Test
+  lint-and-test:
+    name: 🔍 Lint & Test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Run Super-Linter
         uses: github/super-linter@v5
         env:
           VALIDATE_ALL_CODEBASE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_JAVASCRIPT_ES: true
-          DEFAULT_BRANCH: dev
           FILTER_REGEX_INCLUDE: .*\.(js|jsx|ts|tsx)$
-          JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.json
           JAVASCRIPT_DEFAULT_STYLE: prettier
-          LINTER_RULES_PATH: /
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+        with: { node-version: '20' }
 
-      - name: Install server dependencies
+      - name: Install & test server
         working-directory: ./server
-        run: npm install
+        run: |
+          npm ci
+          npm test
 
-      - name: Install client dependencies
+      - name: Install & build client
         working-directory: ./client
-        run: npm install
+        run: |
+          npm ci
+          CI=false npm run build
 
-      - name: Build frontend
-        working-directory: ./client
-        run: CI=false npm run build
+  build-and-push:
+    name: 📦 Build & Push Docker images
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build & push server image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./server
+          file: ./server/Dockerfile
+          push: true
+          tags: >
+            ${{ secrets.DOCKER_USERNAME }}/project2025-server:latest,
+            ${{ secrets.DOCKER_USERNAME }}/project2025-server:${{ github.sha }}
+
+      - name: Build & push client image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./client
+          file: ./client/Dockerfile
+          push: true
+          tags: >
+            ${{ secrets.DOCKER_USERNAME }}/project2025-client:latest,
+            ${{ secrets.DOCKER_USERNAME }}/project2025-client:${{ github.sha }}
 
   deploy:
     name: 🚀 Deploy to AWS EC2
-    needs: build-and-test
+    needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/feature/ci-test'
+    if: startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/feature/ci-test')
     steps:
-      - name: SSH Deploy via appleboy
+      - name: SSH & Deploy
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -62,10 +89,13 @@ jobs:
           script: |
             set -e
             cd /home/ubuntu/Project2025
-            echo "Pull latest changes"
-            git pull origin feature/ci-test
-            echo "Rebuild and restart services"
-            sudo docker-compose -f docker-compose.dev.yml down --remove-orphans
-            sudo docker-compose -f docker-compose.dev.yml up -d --build
-            echo "Cleanup unused images"
-            sudo docker image prune -f
+
+            echo "Pull updated images"
+            docker-compose pull
+
+            echo "Recreate services"
+            docker-compose down
+            docker-compose up -d
+
+            echo "Cleanup"
+            docker image prune -f
