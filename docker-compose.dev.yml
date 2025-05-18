@@ -5,9 +5,11 @@ networks:
     driver: bridge
 
 services:
+  # 1) Ваш бекенд
   server:
     build:
       context: ./server
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     env_file:
@@ -15,58 +17,29 @@ services:
     networks:
       - app-network
 
-  client-builder:
+  # 2) Контейнер з клієнтом (serve build/)
+  client:
     build:
       context: ./client
       dockerfile: Dockerfile
-      target: builder
-    # коли контейнер стартить, він просто миттєво завершиться (exit 0),
-    # але volume client_build вже міститиме зібрану статику
-    command: ["sh", "-c", "echo Static built; exit 0"]
-    volumes:
-      - client_build:/app/build
+      target: prod
+    depends_on:
+      - server        # щоб спочатку бекенд піднявся, якщо вам важливо
     networks:
       - app-network
 
+  # 3) Nginx-проксі
   nginx:
     image: nginx:stable-alpine
     depends_on:
-      - client-builder
+      - client
       - server
     ports:
       - "80:80"
-      - "443:443"    # з часом сюди заведете сертифікати
+      - "443:443"   # для HTTPS
     volumes:
-      - client_build:/usr/share/nginx/html:ro
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      # в майбутньому сюди можна монтувати ваші certs:
-      # - ./docker/nginx/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem
-      # - ./docker/nginx/certs/privkey.pem:/etc/nginx/certs/privkey.pem
+      # сертифікати можна змонтувати сюди пізніше:
+      # - ./docker/nginx/certs:/etc/nginx/certs:ro
     networks:
       - app-network
-
-  db:
-    image: postgres:15
-    env_file:
-      - .env
-    ports:
-      - "5432:5432"
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-
-  redis:
-    image: redis:alpine
-    restart: always
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 15s
-      timeout: 3s
-      retries: 5
-    networks:
-      - app-network
-
-volumes:
-  pg_data:
-  client_build:

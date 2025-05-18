@@ -1,15 +1,20 @@
 # client/Dockerfile
+
+# —————— 1) BUILD Stage
 FROM node:20-alpine AS builder
 WORKDIR /app
-
-# 1) кешуємо залежності
 COPY package.json package-lock.json ./
 RUN npm install --omit=dev
-
-# 2) збірка React
 COPY . .
 RUN npm run build
 
-# 3) оголошуємо каталог зі статикою як VOLUME,
-#    щоб його вміст потрапив у named volume
-VOLUME ["/app/build"]
+# —————— 2) PROD Stage — serve
+FROM node:20-alpine AS prod
+WORKDIR /app
+# встановлюємо глобально serve
+RUN npm install -g serve
+# копіюємо тільки готову збірку
+COPY --from=builder /app/build ./build
+EXPOSE 3000
+# запускаємо статику на 3000-му порту
+CMD ["serve", "-s", "build", "-l", "3000"]
