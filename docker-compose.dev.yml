@@ -19,7 +19,6 @@ services:
 
   # 2) Контейнер з клієнтом (serve build/)
   client:
-    image: sushchuk/project2025:latest   # <-- тут ваш запулений образ
     build:
       context: ./client
       dockerfile: Dockerfile
