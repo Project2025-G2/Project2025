@@ -93,14 +93,14 @@ jobs:
             cd /home/ubuntu/Project2025
 
             echo "Pull latest image from Docker Hub"
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/project2025:latest
+            sudo docker pull sushchuk/project2025:latest
 
             echo "Stop and remove old containers"
             sudo docker-compose -f docker-compose.dev.yml down --remove-orphans
 
             echo "Запуск нових контейнерів з оновленим образом"
             # Припускаємо, що в docker-compose.dev.yml ви вказуєте image: ваш_реєстр/проект:latest
-            sudo docker-compose -f docker-compose.dev.yml up -d
+            sudo docker-compose -f docker-compose.dev.yml up -d   
 
             echo "Cleanup unused images"
             sudo docker image prune -f
