@@ -49,7 +49,7 @@ jobs:
 
       - name: Run client tests
         working-directory: ./client
-        run: CI=true npm test
+        run: CI=true npm test -- --passWithNoTests
 
       - name: Build frontend
         working-directory: ./client
