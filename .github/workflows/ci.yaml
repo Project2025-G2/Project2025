@@ -39,17 +39,21 @@ jobs:
         working-directory: ./server
         run: npm install
 
+      - name: Run server tests
+        working-directory: ./server
+        run: CI=true npm test
+
       - name: Install client dependencies
         working-directory: ./client
         run: npm install
 
+      - name: Run client tests
+        working-directory: ./client
+        run: CI=true npm test
+
       - name: Build frontend
         working-directory: ./client
         run: CI=false npm run build
-
-      - name: Test backend server is running
-        run: |
-          curl --fail http://localhost:5000/api || exit 1
 
   publish-image:
     name: 📦 Build & Push Docker Image
