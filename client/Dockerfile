@@ -5,13 +5,13 @@ RUN npm install --omit=dev
 COPY . .
 RUN npm run build
 
-# —————— 2) PROD Stage — serve
 FROM node:20-alpine AS prod
 WORKDIR /app
-# встановлюємо глобально serve
 RUN npm install -g serve
-# копіюємо тільки готову збірку
 COPY --from=builder /app/build ./build
 EXPOSE 3000
-# запускаємо статику на 3000-му порту
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s \
+  CMD wget --quiet --spider http://localhost:3000 || exit 1
+
 CMD ["serve", "-s", "build", "-l", "3000"]

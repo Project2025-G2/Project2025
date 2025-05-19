@@ -37,7 +37,7 @@ const HomePage = () => {
         </button>
       </section>
       <section className="cta">
-        <h2>CI-CD</h2>
+        <h2>Update Dockerfile</h2>
         {/*<h2>Виріши проблему з вибором фільму вже зараз11!</h2>*/}
         <div className="search-bar">
           <input type="text" placeholder="Що сьогодні хочеш переглянути?" />
