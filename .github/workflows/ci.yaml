@@ -47,6 +47,10 @@ jobs:
         working-directory: ./client
         run: CI=false npm run build
 
+      - name: Test backend server is running
+        run: |
+          curl --fail http://localhost:5000/api || exit 1
+
   publish-image:
     name: 📦 Build & Push Docker Image
     needs: build-and-test

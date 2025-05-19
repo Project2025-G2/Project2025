@@ -11,7 +11,4 @@ RUN npm install -g serve
 COPY --from=builder /app/build ./build
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s \
-  CMD wget --quiet --spider http://localhost:3000 || exit 1
-
 CMD ["serve", "-s", "build", "-l", "3000"]
