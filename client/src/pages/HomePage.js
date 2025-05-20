@@ -38,7 +38,7 @@ const HomePage = () => {
       </section>
       <section className="cta">
         {/*<h2>Update Dockerfile</h2>*/}
-        <h2>Виріши проблему з вибором фільму вже зараз!</h2>
+        <h2>TEAM B</h2>
         <div className="search-bar">
           <input type="text" placeholder="Що сьогодні хочеш переглянути?" />
           <span className="search-icon">🔍</span>
